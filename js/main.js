@@ -1,100 +1,81 @@
-const DATA = [
-    {
-      "day": "mon",
-      "amount": 17.45
-    },
-    {
-      "day": "tue",
-      "amount": 34.91
-    },
-    {
-      "day": "wed",
-      "amount": 52.36
-    },
-    {
-      "day": "thu",
-      "amount": 31.07
-    },
-    {
-      "day": "fri",
-      "amount": 23.39
-    },
-    {
-      "day": "sat",
-      "amount": 43.28
-    },
-    {
-      "day": "sun",
-      "amount": 25.48
-    }
-  ];
+const DATA_URL = 'https://raw.githubusercontent.com/BarreraJorgeL/expenses-chart-component/master/data.json';
+const GRAPHIC_BARS_CONTAINER = document.querySelector('.balance--week__graphic');
+const GRAPHIC_TITLE_CONTAINER = document.querySelector('.balance--week__title')
 
-// CREATING GRAPHIC -------------
-const GRAPHIC_DESIGN_CONTAINER = document.querySelector('.balance--week__graphic');
-const GRAPHIC_TITLE_CONTAINER = document.querySelector('.balance--week__title');
-
-const GRAPHIC_TITLE = `Spending - Last ${DATA.length} days`;
-
-const GRAPHIC_DESIGN = dt =>`<li class="day">
-    <div class="day__bar" value="${dt.amount}"></div>
-    <p class="day__name">${dt.day}</p>
-  </li>`
-
-function createGraphic(){
-  GRAPHIC_TITLE_CONTAINER.innerText = GRAPHIC_TITLE;
-  createBars();
+function getData(){
+  return fetch(DATA_URL).then(response => response.json());
 }
 
-function createBars(){
-  DATA.slice().reverse().forEach( dt => {
-    GRAPHIC_DESIGN_CONTAINER.insertAdjacentHTML('afterbegin', GRAPHIC_DESIGN(dt));
+function barDesign (dj) {
+  return `<li class="day">
+  <div class="day__bar" value="${dj.amount}"></div>
+  <p class="day__name">${dj.day}</p>
+  </li>`
+}
+
+function setBars(DATA_JSON){
+  DATA_JSON.slice().reverse().forEach( dj => {
+    GRAPHIC_BARS_CONTAINER.insertAdjacentHTML('afterbegin', barDesign(dj));
   });
 }
 
-createGraphic();
+function createGraphic(GRAPHIC_TITLE, DATA_JSON){
+  GRAPHIC_TITLE_CONTAINER.innerText = GRAPHIC_TITLE;
+  setBars(DATA_JSON);
+}
 
-// CREATING FLOAT DESCRIPTION ----------
-const BAR_CONTAINERS = Array.from(document.querySelectorAll('.day'));
-const BARS = Array.from(document.querySelectorAll('.day__bar'));
+function getBarContainers(){
+  let barContainers = Array.from(document.querySelectorAll('.day'));
+  return barContainers;
+}
+
+function getBars(){
+  let bars = Array.from(document.querySelectorAll('.day__bar'));
+  return bars;
+}
 
 function setHeightBars(){
+  const BARS = getBars();
   BARS.forEach(e => {
-    e.style.height = (e.attributes.value.value) * 2 + 'px';
+    e.style.height = (e.attributes.value.value) * 1.8 + 'px';
   });
 }
+
 function compareNumbers(a, b){
   return a - b;
 }
 
-function resaltMostTallBar(){
-  let amounts =[];
-  let mostHightAmount;
-  let mostTallBar;
-  BARS.forEach(e => {
-    amounts.push(e.attributes.value.value);
+function getMostHighAmount(DATA_JSON){
+  let amounts = [];
+  let mostHighAmount;
+  DATA_JSON.forEach(dj => {
+    amounts.push(dj.amount);
   });
-  mostHightAmount = amounts.sort(compareNumbers)[amounts.length - 1];
-  console.log(mostHightAmount);
-  BARS.forEach(e => {
-    if(e.attributes.value.value === mostHightAmount){
-      e.classList.add('dangerous-day');
+  mostHighAmount = amounts.sort(compareNumbers)[amounts.length - 1];
+  return mostHighAmount;
+}
+
+function resaltMostTallBar(DATA_JSON){
+  const BARS = getBars();
+  const MOST_HIGH_AMOUNT = getMostHighAmount(DATA_JSON);
+
+  BARS.forEach(br => {
+    if(br.attributes.value.value == MOST_HIGH_AMOUNT){
+      br.classList.add('dangerous-day');
     }
   });
 }
 
-setHeightBars();
-resaltMostTallBar();
-
-function showFloatingDescription(target, show){
+function showFloatingAmount(TARGET, BOOLEAN){
   try{
-    if(show){
-      const amount =  target.firstElementChild.attributes.value.value;
-      const DESCRIPTION = `<p class="day__bar--amount">$${amount}</p>`;
-      target.insertAdjacentHTML('beforeend', DESCRIPTION);
+    if(BOOLEAN){
+      let amount =  TARGET.firstElementChild.attributes.value.value;
+      let description = `<p class="day__bar--amount">$${amount}</p>`;
+      TARGET.insertAdjacentHTML('beforeend', description);
     }
     else{
-      const DESCRIPTION = document.querySelector('.day__bar--amount');
-      DESCRIPTION.remove();
+      const description = document.querySelector('.day__bar--amount');
+      description.remove();
     }
   }
   catch(err){
@@ -102,11 +83,29 @@ function showFloatingDescription(target, show){
   }
 }
 
-BAR_CONTAINERS.forEach(bar => {
-    bar.addEventListener('mouseenter', () => {
-      showFloatingDescription(bar, true);
+async function printData(){
+
+  try{
+    const DATA_JSON = await getData();
+    const GRAPHIC_TITLE = `Spending - Last ${DATA_JSON.length} days`;
+
+    createGraphic(GRAPHIC_TITLE, DATA_JSON);
+    setHeightBars();
+    resaltMostTallBar(DATA_JSON);
+
+    const BAR_CONTAINERS = getBarContainers();
+    BAR_CONTAINERS.forEach(bc => {
+      bc.addEventListener('mouseenter', () => {
+        showFloatingAmount(bc, true);
+      });
+      bc.addEventListener('mouseleave', () => {
+        showFloatingAmount(bc, false);
+      });
     });
-    bar.addEventListener('mouseleave', e => {
-      showFloatingDescription(bar, false);
-    });
-});
+  }
+  catch(err){
+    console.log('no hay datos');
+  }
+}
+
+printData();

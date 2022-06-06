@@ -4,7 +4,7 @@
     font-weight: normal;
     list-style: none;
     text-decoration: none;
-    font-family: sans-serif;
+    font-family: 'DM Sans', sans-serif;
 }
 :root{
     --Soft-red: hsl(10, 79%, 65%);
@@ -25,8 +25,8 @@ body{
 }
 .container{
     width: 90%;
-    max-width: 550px;
-    margin: 0 auto;
+    max-width: 500px;
+    margin: 16vh auto 0 auto;
 }
 .balance{
     display: flex;
@@ -77,6 +77,7 @@ body{
     background-color: var(--Cream);
 }
 .day{
+    width: clamp(26px, 12%, 46px);
     color: var(--Medium-brown);
     position: relative;
 }
@@ -85,8 +86,6 @@ body{
     cursor: pointer;
 }
 .day__bar{
-    width: 46px;
-    height: 80px;
     background-color: var(--Soft-red);
     border-radius: .4em;
     position: relative;
@@ -126,11 +125,14 @@ body{
     color: var(--Dark-brown);
 }
 .current-month__amount{
-    font-size: 2.25rem;
+    font-size: clamp(2.20rem, 4vw, 3rem);
     margin-top: .3em;
 }
-.last-month__compare{
+.last-month__compare,
+.last-month__text{
     text-align: right;
+}
+.last-month__compare{
     font-size: var(--Size-one);
     margin-bottom: .3em;
 }
