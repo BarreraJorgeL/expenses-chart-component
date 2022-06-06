@@ -5,7 +5,6 @@
     list-style: none;
     text-decoration: none;
     font-family: sans-serif;
-    /*outline: .6px dashed blue;*/
 }
 :root{
     --Soft-red: hsl(10, 79%, 65%);
@@ -61,7 +60,7 @@ body{
 .balance--week__title{
     font-size: 1.6rem;
     font-weight: var(--Weigth-two);
-    margin-bottom: 1.6em;
+    margin-bottom: 1.8em;
 }
 .balance--week__graphic{
     display: flex;
@@ -86,19 +85,32 @@ body{
     cursor: pointer;
 }
 .day__bar{
-    width: 30px;
+    width: 46px;
     height: 80px;
     background-color: var(--Soft-red);
     border-radius: .4em;
+    position: relative;
+}
+.day__bar--amount{
+    position: absolute;
+    text-align: center;
+    left: -1em;
+    right: -1em;
+    top: 0;
+    transform: translateY(-110%);
+    background-color: var(--Dark-brown);
+    padding: .4em .6em;
+    color: var(--Very-pale-orange);
+    border-radius: .6em;
+    z-index: 2;
 }
 .dangerous-day{
-    height: 120px;
     background-color: var(--Cyan);
 }
 .day__name{
     text-align: center;
     font-weight: var(--Weight-one);
-    margin: .8em 0 1.4em 0;
+    padding: .8em 0 1.4em 0;
 }
 .balance--total{
     display: flex;
